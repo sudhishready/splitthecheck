@@ -78,3 +78,51 @@ export default function Home() {
       })
     )
   }
+
+  const totals = calculateTotals(people, items, taxPercent, tipPercent)
+
+  return (
+    <main className="min-h-screen bg-background px-4 py-10">
+      <div className="mx-auto max-w-3xl space-y-8">
+        <div className="text-center space-y-3">
+          <AnimatedGradientText className="text-4xl font-bold">
+            splitthecheck
+          </AnimatedGradientText>
+          <p className="text-muted-foreground">split the bill without doing the math in your head</p>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="tax">tax %</Label>
+            <Input
+              id="tax"
+              type="number"
+              value={taxPercent}
+              onChange={(e) => setTaxPercent(Number(e.target.value))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="tip">tip %</Label>
+            <Input
+              id="tip"
+              type="number"
+              value={tipPercent}
+              onChange={(e) => setTipPercent(Number(e.target.value))}
+            />
+          </div>
+        </div>
+
+        <PeoplePanel people={people} onAdd={addPerson} onRemove={removePerson} />
+
+        <ItemsPanel
+          items={items}
+          people={people}
+          onAdd={addItem}
+          onRemove={removeItem}
+          onToggle={toggleItemPerson}
+        />
+
+        <SummaryPanel totals={totals} />
+      </div>
+    </main>
+  )
+}
