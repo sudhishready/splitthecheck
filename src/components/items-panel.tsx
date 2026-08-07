@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Item, Person } from "@/lib/types"
-import { Trash2 } from "lucide-react"
+import { Trash2, Pencil } from "lucide-react"
 
 interface ItemsPanelProps {
   items: Item[]
@@ -14,6 +14,7 @@ interface ItemsPanelProps {
   onToggle: (itemId: string, personId: string) => void
   onSetPayer: (itemId: string, personId: string) => void
   onSetQty: (itemId: string, qty: number) => void
+  onEdit: (itemId: string, name: string, price: number) => void
   onSelectAll: (itemId: string, ids: string[]) => void
 }
 
@@ -26,9 +27,25 @@ export function ItemsPanel({
   onToggle,
   onSetPayer,
   onSelectAll,
+  onEdit,
 }: ItemsPanelProps) {
   const [name, setName] = useState("")
   const [price, setPrice] = useState("")
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editName, setEditName] = useState("")
+  const [editPrice, setEditPrice] = useState("")
+  function startEdit(item: Item) {
+    setEditingId(item.id)
+    setEditName(item.name)
+    setEditPrice(String(item.price))
+  }
+
+  function saveEdit(id: string) {
+    const value = parseFloat(editPrice)
+    if (!editName.trim() || isNaN(value) || value <= 0) return
+    onEdit(id, editName.trim(), value)
+    setEditingId(null)
+  }
 
   function handleAdd() {
     const value = parseFloat(price)
@@ -89,8 +106,31 @@ export function ItemsPanel({
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
+                <button
+                  onClick={() => startEdit(item)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
               </div>
             </div>
+            {editingId === item.id && (
+              <div className="flex gap-2 pt-1">
+                <Input
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="h-8"
+                />
+                <Input
+                  value={editPrice}
+                  onChange={(e) => setEditPrice(e.target.value)}
+                  className="h-8 w-20"
+                />
+                <Button size="sm" onClick={() => saveEdit(item.id)}>
+                  save
+                </Button>
+              </div>
+            )}
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() =>

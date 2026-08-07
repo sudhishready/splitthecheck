@@ -89,6 +89,14 @@ export default function Home() {
     )
   }
 
+  function editItem(itemId: string, name: string, price: number) {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === itemId ? { ...item, name, price } : item,
+      ),
+    )
+  }
+
   function setItemQty(itemId: string, qty: number) {
     setItems((prev) =>
       prev.map((item) => (item.id === itemId ? { ...item, qty } : item)),
@@ -187,6 +195,7 @@ export default function Home() {
           onToggle={toggleItemPerson}
           onSetPayer={setItemPayer}
           onSetQty={setItemQty}
+          onEdit={editItem}
           onSelectAll={setItemAllPeople}
         />
 
