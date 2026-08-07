@@ -194,6 +194,11 @@ export function ItemsPanel({
                 )
               })}
             </div>
+            {!item.paidBy && (
+              <p className="text-xs text-amber-600">
+                no one marked as paying yet
+              </p>
+            )}
           </div>
         ))}
       </div>
