@@ -35,9 +35,16 @@ export function PeoplePanel({ people, onAdd, onRemove }: PeoplePanelProps) {
       </div>
       <div className="flex flex-wrap gap-2">
         {people.map((person) => (
-          <Badge key={person.id} variant="secondary" className="gap-1 py-1 px-3 text-sm">
+          <Badge
+            key={person.id}
+            variant="secondary"
+            className="gap-1 py-1 px-3 text-sm"
+          >
             {person.name}
-            <button onClick={() => onRemove(person.id)} className="ml-1 hover:text-red-500">
+            <button
+              onClick={() => onRemove(person.id)}
+              className="ml-1 hover:text-red-500"
+            >
               <X className="h-3 w-3" />
             </button>
           </Badge>
