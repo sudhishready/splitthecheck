@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Item, Person } from "@/lib/types"
-import { Trash2, Pencil } from "lucide-react"
+import { Trash2, Copy, Pencil } from "lucide-react"
 import { personColor } from "@/lib/utils"
 interface ItemsPanelProps {
   items: Item[]
@@ -102,6 +102,12 @@ export function ItemsPanel({
                 <span className="text-sm text-muted-foreground">
                   ${(item.price * (item.qty || 1)).toFixed(2)}
                 </span>
+                <button
+                  onClick={() => onAdd(item.name, item.price)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Copy className="h-4 w-4" />
+                </button>
                 <button
                   onClick={() => onRemove(item.id)}
                   className="text-muted-foreground hover:text-red-500"
