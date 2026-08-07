@@ -81,6 +81,11 @@ export function ItemsPanel({
           onChange={(e) => setSearch(e.target.value)}
         />
       )}
+      {items.length === 0 && (
+        <p className="text-xs text-muted-foreground">
+          add items from the bill to split them up
+        </p>
+      )}
 
       <div className="space-y-3">
         {items

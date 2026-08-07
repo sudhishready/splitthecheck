@@ -34,6 +34,11 @@ export function PeoplePanel({ people, onAdd, onRemove }: PeoplePanelProps) {
         />
         <Button onClick={handleAdd}>Add</Button>
       </div>
+      {people.length === 0 && (
+        <p className="text-xs text-muted-foreground">
+          add people to split the bill with
+        </p>
+      )}
       <div className="flex flex-wrap gap-2">
         {people.map((person, i) => (
           <Badge
