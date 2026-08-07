@@ -8,4 +8,5 @@ export interface Item {
   name: string
   price: number
   peopleIds: string[]
+  paidBy?: string
 }

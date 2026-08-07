@@ -12,9 +12,17 @@ interface ItemsPanelProps {
   onAdd: (name: string, price: number) => void
   onRemove: (id: string) => void
   onToggle: (itemId: string, personId: string) => void
+  onSetPayer: (itemId: string, personId: string) => void
 }
 
-export function ItemsPanel({ items, people, onAdd, onRemove, onToggle }: ItemsPanelProps) {
+export function ItemsPanel({
+  items,
+  people,
+  onAdd,
+  onRemove,
+  onToggle,
+  onSetPayer,
+}: ItemsPanelProps) {
   const [name, setName] = useState("")
   const [price, setPrice] = useState("")
 
@@ -49,8 +57,13 @@ export function ItemsPanel({ items, people, onAdd, onRemove, onToggle }: ItemsPa
             <div className="flex items-center justify-between">
               <span className="font-medium">{item.name}</span>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">${item.price.toFixed(2)}</span>
-                <button onClick={() => onRemove(item.id)} className="text-muted-foreground hover:text-red-500">
+                <span className="text-sm text-muted-foreground">
+                  ${item.price.toFixed(2)}
+                </span>
+                <button
+                  onClick={() => onRemove(item.id)}
+                  className="text-muted-foreground hover:text-red-500"
+                >
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -65,6 +78,25 @@ export function ItemsPanel({ items, people, onAdd, onRemove, onToggle }: ItemsPa
                     className={`text-xs rounded-full px-3 py-1 border transition-colors ${
                       active
                         ? "bg-primary text-primary-foreground border-primary"
+                        : "border-muted-foreground/30 text-muted-foreground"
+                    }`}
+                  >
+                    {person.name}
+                  </button>
+                )
+              })}
+            </div>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="text-xs text-muted-foreground">paid by</span>
+              {people.map((person) => {
+                const isPayer = item.paidBy === person.id
+                return (
+                  <button
+                    key={person.id}
+                    onClick={() => onSetPayer(item.id, person.id)}
+                    className={`text-xs rounded-full px-3 py-1 border transition-colors ${
+                      isPayer
+                        ? "bg-emerald-600 text-white border-emerald-600"
                         : "border-muted-foreground/30 text-muted-foreground"
                     }`}
                   >
