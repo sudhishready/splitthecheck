@@ -23,6 +23,7 @@ export default function Home() {
   const [tipPercent, setTipPercent] = useState(0)
   const [discountPercent, setDiscountPercent] = useState(0)
   const [loaded, setLoaded] = useState(false)
+  const [paidSettlements, setPaidSettlements] = useState<string[]>([])
 
   useEffect(() => {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -34,6 +35,7 @@ export default function Home() {
       setTaxPercent(data.taxPercent || 0)
       setTipPercent(data.tipPercent || 0)
       setDiscountPercent(data.discountPercent || 0)
+      setPaidSettlements(data.paidSettlements || [])
     }
     setLoaded(true)
   }, [])
@@ -49,9 +51,19 @@ export default function Home() {
         taxPercent,
         tipPercent,
         discountPercent,
+        paidSettlements,
       }),
     )
-  }, [people, billName, items, taxPercent, tipPercent, discountPercent, loaded])
+  }, [
+    people,
+    billName,
+    items,
+    taxPercent,
+    tipPercent,
+    discountPercent,
+    paidSettlements,
+    loaded,
+  ])
 
   function addPerson(name: string) {
     setPeople((prev) => [...prev, { id: crypto.randomUUID(), name }])
@@ -120,11 +132,17 @@ export default function Home() {
       ),
     )
   }
+  function toggleSettlementPaid(key: string) {
+    setPaidSettlements((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
+    )
+  }
   function resetAll() {
     if (!confirm("wipe everything and start a new bill?")) return
     setPeople([])
     setItems([])
     setTaxPercent(0)
+    setPaidSettlements([])
     setTipPercent(0)
     setDiscountPercent(0)
     setBillName("")
@@ -236,7 +254,11 @@ export default function Home() {
 
         <SummaryPanel totals={totals} billName={billName} />
 
-        <SettleUpPanel settlements={settlements} />
+        <SettleUpPanel
+          settlements={settlements}
+          paidKeys={paidSettlements}
+          onTogglePaid={toggleSettlementPaid}
+        />
       </div>
     </main>
   )
