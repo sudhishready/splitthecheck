@@ -31,6 +31,7 @@ export function ItemsPanel({
 }: ItemsPanelProps) {
   const [name, setName] = useState("")
   const [price, setPrice] = useState("")
+  const [search, setSearch] = useState("")
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editName, setEditName] = useState("")
   const [editPrice, setEditPrice] = useState("")
@@ -73,134 +74,143 @@ export function ItemsPanel({
         />
         <Button onClick={handleAdd}>Add</Button>
       </div>
+      {items.length > 3 && (
+        <Input
+          placeholder="search items"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      )}
 
       <div className="space-y-3">
-        {items.map((item) => (
-          <div key={item.id} className="rounded-lg border p-3 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="font-medium">{item.name}</span>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() =>
-                      onSetQty(item.id, Math.max(1, (item.qty || 1) - 1))
-                    }
-                    className="text-muted-foreground hover:text-foreground px-1"
-                  >
-                    -
-                  </button>
-                  <span className="text-xs w-4 text-center">
-                    {item.qty || 1}
+        {items
+          .filter((i) => i.name.toLowerCase().includes(search.toLowerCase()))
+          .map((item) => (
+            <div key={item.id} className="rounded-lg border p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-medium">{item.name}</span>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() =>
+                        onSetQty(item.id, Math.max(1, (item.qty || 1) - 1))
+                      }
+                      className="text-muted-foreground hover:text-foreground px-1"
+                    >
+                      -
+                    </button>
+                    <span className="text-xs w-4 text-center">
+                      {item.qty || 1}
+                    </span>
+                    <button
+                      onClick={() => onSetQty(item.id, (item.qty || 1) + 1)}
+                      className="text-muted-foreground hover:text-foreground px-1"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    ${(item.price * (item.qty || 1)).toFixed(2)}
                   </span>
                   <button
-                    onClick={() => onSetQty(item.id, (item.qty || 1) + 1)}
-                    className="text-muted-foreground hover:text-foreground px-1"
+                    onClick={() => onAdd(item.name, item.price)}
+                    className="text-muted-foreground hover:text-foreground"
                   >
-                    +
+                    <Copy className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => onRemove(item.id)}
+                    className="text-muted-foreground hover:text-red-500"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => startEdit(item)}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <Pencil className="h-4 w-4" />
                   </button>
                 </div>
-                <span className="text-sm text-muted-foreground">
-                  ${(item.price * (item.qty || 1)).toFixed(2)}
-                </span>
-                <button
-                  onClick={() => onAdd(item.name, item.price)}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <Copy className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => onRemove(item.id)}
-                  className="text-muted-foreground hover:text-red-500"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => startEdit(item)}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <Pencil className="h-4 w-4" />
-                </button>
               </div>
-            </div>
-            {editingId === item.id && (
-              <div className="flex gap-2 pt-1">
-                <Input
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="h-8"
-                />
-                <Input
-                  value={editPrice}
-                  onChange={(e) => setEditPrice(e.target.value)}
-                  className="h-8 w-20"
-                />
-                <Button size="sm" onClick={() => saveEdit(item.id)}>
-                  save
-                </Button>
-              </div>
-            )}
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() =>
-                  onSelectAll(
-                    item.id,
-                    item.peopleIds.length === people.length
-                      ? []
-                      : people.map((p) => p.id),
+              {editingId === item.id && (
+                <div className="flex gap-2 pt-1">
+                  <Input
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="h-8"
+                  />
+                  <Input
+                    value={editPrice}
+                    onChange={(e) => setEditPrice(e.target.value)}
+                    className="h-8 w-20"
+                  />
+                  <Button size="sm" onClick={() => saveEdit(item.id)}>
+                    save
+                  </Button>
+                </div>
+              )}
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() =>
+                    onSelectAll(
+                      item.id,
+                      item.peopleIds.length === people.length
+                        ? []
+                        : people.map((p) => p.id),
+                    )
+                  }
+                  className="text-xs rounded-full px-3 py-1 border border-dashed border-muted-foreground/40 text-muted-foreground"
+                >
+                  all
+                </button>
+                {people.map((person, i) => {
+                  const active = item.peopleIds.includes(person.id)
+                  return (
+                    <button
+                      key={person.id}
+                      onClick={() => onToggle(item.id, person.id)}
+                      className={`text-xs rounded-full px-3 py-1 border transition-colors ${
+                        active
+                          ? `${personColor(i)} text-white border-transparent`
+                          : "border-muted-foreground/30 text-muted-foreground"
+                      }`}
+                    >
+                      {person.name}
+                    </button>
                   )
-                }
-                className="text-xs rounded-full px-3 py-1 border border-dashed border-muted-foreground/40 text-muted-foreground"
-              >
-                all
-              </button>
-              {people.map((person, i) => {
-                const active = item.peopleIds.includes(person.id)
-                return (
-                  <button
-                    key={person.id}
-                    onClick={() => onToggle(item.id, person.id)}
-                    className={`text-xs rounded-full px-3 py-1 border transition-colors ${
-                      active
-                        ? `${personColor(i)} text-white border-transparent`
-                        : "border-muted-foreground/30 text-muted-foreground"
-                    }`}
-                  >
-                    {person.name}
-                  </button>
-                )
-              })}
+                })}
+              </div>
+              {item.peopleIds.length === 0 && (
+                <p className="text-xs text-amber-600">
+                  no one assigned to this yet
+                </p>
+              )}
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <span className="text-xs text-muted-foreground">paid by</span>
+                {people.map((person, i) => {
+                  const isPayer = item.paidBy === person.id
+                  return (
+                    <button
+                      key={person.id}
+                      onClick={() => onSetPayer(item.id, person.id)}
+                      className={`text-xs rounded-full px-3 py-1 border transition-colors ${
+                        isPayer
+                          ? `${personColor(i)} text-white border-transparent`
+                          : "border-muted-foreground/30 text-muted-foreground"
+                      }`}
+                    >
+                      {person.name}
+                    </button>
+                  )
+                })}
+              </div>
+              {!item.paidBy && (
+                <p className="text-xs text-amber-600">
+                  no one marked as paying yet
+                </p>
+              )}
             </div>
-            {item.peopleIds.length === 0 && (
-              <p className="text-xs text-amber-600">
-                no one assigned to this yet
-              </p>
-            )}
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              <span className="text-xs text-muted-foreground">paid by</span>
-              {people.map((person, i) => {
-                const isPayer = item.paidBy === person.id
-                return (
-                  <button
-                    key={person.id}
-                    onClick={() => onSetPayer(item.id, person.id)}
-                    className={`text-xs rounded-full px-3 py-1 border transition-colors ${
-                      isPayer
-                        ? `${personColor(i)} text-white border-transparent`
-                        : "border-muted-foreground/30 text-muted-foreground"
-                    }`}
-                  >
-                    {person.name}
-                  </button>
-                )
-              })}
-            </div>
-            {!item.paidBy && (
-              <p className="text-xs text-amber-600">
-                no one marked as paying yet
-              </p>
-            )}
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   )
