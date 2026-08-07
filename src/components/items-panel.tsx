@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Item, Person } from "@/lib/types"
 import { Trash2, Pencil } from "lucide-react"
-
+import { personColor } from "@/lib/utils"
 interface ItemsPanelProps {
   items: Item[]
   people: Person[]
@@ -145,7 +145,7 @@ export function ItemsPanel({
               >
                 all
               </button>
-              {people.map((person) => {
+              {people.map((person, i) => {
                 const active = item.peopleIds.includes(person.id)
                 return (
                   <button
@@ -153,7 +153,7 @@ export function ItemsPanel({
                     onClick={() => onToggle(item.id, person.id)}
                     className={`text-xs rounded-full px-3 py-1 border transition-colors ${
                       active
-                        ? "bg-primary text-primary-foreground border-primary"
+                        ? `${personColor(i)} text-white border-transparent`
                         : "border-muted-foreground/30 text-muted-foreground"
                     }`}
                   >
@@ -164,7 +164,7 @@ export function ItemsPanel({
             </div>
             <div className="flex flex-wrap items-center gap-2 pt-1">
               <span className="text-xs text-muted-foreground">paid by</span>
-              {people.map((person) => {
+              {people.map((person, i) => {
                 const isPayer = item.paidBy === person.id
                 return (
                   <button
@@ -172,7 +172,7 @@ export function ItemsPanel({
                     onClick={() => onSetPayer(item.id, person.id)}
                     className={`text-xs rounded-full px-3 py-1 border transition-colors ${
                       isPayer
-                        ? "bg-emerald-600 text-white border-emerald-600"
+                        ? `${personColor(i)} text-white border-transparent`
                         : "border-muted-foreground/30 text-muted-foreground"
                     }`}
                   >

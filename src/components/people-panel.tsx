@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Person } from "@/lib/types"
 import { X } from "lucide-react"
+import { personColor } from "@/lib/utils"
 
 interface PeoplePanelProps {
   people: Person[]
@@ -34,12 +35,13 @@ export function PeoplePanel({ people, onAdd, onRemove }: PeoplePanelProps) {
         <Button onClick={handleAdd}>Add</Button>
       </div>
       <div className="flex flex-wrap gap-2">
-        {people.map((person) => (
+        {people.map((person, i) => (
           <Badge
             key={person.id}
             variant="secondary"
             className="gap-1 py-1 px-3 text-sm"
           >
+            <span className={`h-2 w-2 rounded-full ${personColor(i)}`} />
             {person.name}
             <button
               onClick={() => onRemove(person.id)}
