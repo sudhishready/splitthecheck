@@ -9,13 +9,15 @@ import { Copy, Check } from "lucide-react"
 
 interface SummaryPanelProps {
   totals: PersonTotal[]
+  billName: string
 }
 
-export function SummaryPanel({ totals }: SummaryPanelProps) {
+export function SummaryPanel({ totals, billName }: SummaryPanelProps) {
   const grandTotal = totals.reduce((sum, t) => sum + t.total, 0)
   const [copied, setCopied] = useState(false)
   function copySummary() {
     const lines = totals.map((t) => `${t.name}: $${t.total.toFixed(2)}`)
+    if (billName) lines.unshift(billName)
     lines.push(`total: $${grandTotal.toFixed(2)}`)
     navigator.clipboard.writeText(lines.join("\n"))
     setCopied(true)

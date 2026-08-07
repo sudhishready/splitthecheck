@@ -19,6 +19,7 @@ export default function Home() {
   const [people, setPeople] = useState<Person[]>([])
   const [items, setItems] = useState<Item[]>([])
   const [taxPercent, setTaxPercent] = useState(0)
+  const [billName, setBillName] = useState("")
   const [tipPercent, setTipPercent] = useState(0)
   const [discountPercent, setDiscountPercent] = useState(0)
   const [loaded, setLoaded] = useState(false)
@@ -29,6 +30,7 @@ export default function Home() {
       const data = JSON.parse(raw)
       setPeople(data.people || [])
       setItems(data.items || [])
+      setBillName(data.billName || "")
       setTaxPercent(data.taxPercent || 0)
       setTipPercent(data.tipPercent || 0)
       setDiscountPercent(data.discountPercent || 0)
@@ -42,13 +44,14 @@ export default function Home() {
       STORAGE_KEY,
       JSON.stringify({
         people,
+        billName,
         items,
         taxPercent,
         tipPercent,
         discountPercent,
       }),
     )
-  }, [people, items, taxPercent, tipPercent, discountPercent, loaded])
+  }, [people, billName, items, taxPercent, tipPercent, discountPercent, loaded])
 
   function addPerson(name: string) {
     setPeople((prev) => [...prev, { id: crypto.randomUUID(), name }])
@@ -124,6 +127,7 @@ export default function Home() {
     setTaxPercent(0)
     setTipPercent(0)
     setDiscountPercent(0)
+    setBillName("")
   }
 
   const totals = calculateTotals(
@@ -160,6 +164,12 @@ export default function Home() {
           <p className="text-muted-foreground">
             split the bill without doing the math in your head
           </p>
+          <Input
+            value={billName}
+            onChange={(e) => setBillName(e.target.value)}
+            placeholder="name this bill (optional)"
+            className="max-w-xs mx-auto text-center"
+          />
         </div>
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
@@ -224,7 +234,7 @@ export default function Home() {
           onSelectAll={setItemAllPeople}
         />
 
-        <SummaryPanel totals={totals} />
+        <SummaryPanel totals={totals} billName={billName} />
 
         <SettleUpPanel settlements={settlements} />
       </div>
