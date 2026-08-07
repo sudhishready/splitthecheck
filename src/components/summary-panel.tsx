@@ -48,9 +48,15 @@ export function SummaryPanel({ totals, billName }: SummaryPanelProps) {
           </p>
         )}
         {totals.map((t) => (
-          <div key={t.id} className="flex items-center justify-between text-sm">
-            <span>{t.name}</span>
-            <span className="font-semibold">${t.total.toFixed(2)}</span>
+          <div key={t.id} className="space-y-0.5 text-sm">
+            <div className="flex items-center justify-between">
+              <span>{t.name}</span>
+              <span className="font-semibold">${t.total.toFixed(2)}</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              sub {t.subtotal.toFixed(2)} + tax {t.tax.toFixed(2)} + tip{" "}
+              {t.tip.toFixed(2)} - disc {t.discount.toFixed(2)}
+            </p>
           </div>
         ))}
         {totals.length > 0 && (
