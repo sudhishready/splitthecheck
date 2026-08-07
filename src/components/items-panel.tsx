@@ -13,15 +13,19 @@ interface ItemsPanelProps {
   onRemove: (id: string) => void
   onToggle: (itemId: string, personId: string) => void
   onSetPayer: (itemId: string, personId: string) => void
+  onSetQty: (itemId: string, qty: number) => void
+  onSelectAll: (itemId: string, ids: string[]) => void
 }
 
 export function ItemsPanel({
   items,
   people,
+  onSetQty,
   onAdd,
   onRemove,
   onToggle,
   onSetPayer,
+  onSelectAll,
 }: ItemsPanelProps) {
   const [name, setName] = useState("")
   const [price, setPrice] = useState("")
@@ -57,8 +61,27 @@ export function ItemsPanel({
             <div className="flex items-center justify-between">
               <span className="font-medium">{item.name}</span>
               <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() =>
+                      onSetQty(item.id, Math.max(1, (item.qty || 1) - 1))
+                    }
+                    className="text-muted-foreground hover:text-foreground px-1"
+                  >
+                    -
+                  </button>
+                  <span className="text-xs w-4 text-center">
+                    {item.qty || 1}
+                  </span>
+                  <button
+                    onClick={() => onSetQty(item.id, (item.qty || 1) + 1)}
+                    className="text-muted-foreground hover:text-foreground px-1"
+                  >
+                    +
+                  </button>
+                </div>
                 <span className="text-sm text-muted-foreground">
-                  ${item.price.toFixed(2)}
+                  ${(item.price * (item.qty || 1)).toFixed(2)}
                 </span>
                 <button
                   onClick={() => onRemove(item.id)}
@@ -69,6 +92,19 @@ export function ItemsPanel({
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() =>
+                  onSelectAll(
+                    item.id,
+                    item.peopleIds.length === people.length
+                      ? []
+                      : people.map((p) => p.id),
+                  )
+                }
+                className="text-xs rounded-full px-3 py-1 border border-dashed border-muted-foreground/40 text-muted-foreground"
+              >
+                all
+              </button>
               {people.map((person) => {
                 const active = item.peopleIds.includes(person.id)
                 return (

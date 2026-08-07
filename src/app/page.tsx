@@ -59,7 +59,7 @@ export default function Home() {
   function addItem(name: string, price: number) {
     setItems((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), name, price, peopleIds: [] },
+      { id: crypto.randomUUID(), name, price, qty: 1, peopleIds: [] },
     ])
   }
 
@@ -85,6 +85,19 @@ export default function Home() {
     setItems((prev) =>
       prev.map((item) =>
         item.id === itemId ? { ...item, paidBy: personId } : item,
+      ),
+    )
+  }
+
+  function setItemQty(itemId: string, qty: number) {
+    setItems((prev) =>
+      prev.map((item) => (item.id === itemId ? { ...item, qty } : item)),
+    )
+  }
+  function setItemAllPeople(itemId: string, ids: string[]) {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === itemId ? { ...item, peopleIds: ids } : item,
       ),
     )
   }
@@ -142,6 +155,21 @@ export default function Home() {
               value={tipPercent}
               onChange={(e) => setTipPercent(Number(e.target.value))}
             />
+            <div className="flex gap-1 pt-1">
+              {[0, 10, 15, 18, 20].map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setTipPercent(p)}
+                  className={`text-xs rounded-full px-2 py-0.5 border ${
+                    tipPercent === p
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "border-muted-foreground/30 text-muted-foreground"
+                  }`}
+                >
+                  {p}%
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -158,6 +186,8 @@ export default function Home() {
           onRemove={removeItem}
           onToggle={toggleItemPerson}
           onSetPayer={setItemPayer}
+          onSetQty={setItemQty}
+          onSelectAll={setItemAllPeople}
         />
 
         <SummaryPanel totals={totals} />

@@ -22,13 +22,16 @@ export function calculateTotals(
 
   for (const item of items) {
     if (item.peopleIds.length === 0) continue
-    const share = item.price / item.peopleIds.length
+    const share = (item.price * (item.qty || 1)) / item.peopleIds.length
     for (const personId of item.peopleIds) {
       subtotals[personId] = (subtotals[personId] || 0) + share
     }
   }
 
-  const billSubtotal = items.reduce((sum, item) => sum + item.price, 0)
+  const billSubtotal = items.reduce(
+    (sum, item) => sum + item.price * (item.qty || 1),
+    0,
+  )
 
   return people.map((person) => {
     const subtotal = subtotals[person.id] || 0
@@ -70,12 +73,16 @@ export function calculateSettlements(
     paid[person.id] = 0
   }
 
-  const billSubtotal = items.reduce((sum, item) => sum + item.price, 0)
+  const billSubtotal = items.reduce(
+    (sum, item) => sum + item.price * (item.qty || 1),
+    0,
+  )
   const billTotal = totals.reduce((sum, t) => sum + t.total, 0)
   const scale = billSubtotal > 0 ? billTotal / billSubtotal : 1
   for (const item of items) {
     if (!item.paidBy) continue
-    paid[item.paidBy] = (paid[item.paidBy] || 0) + item.price * scale
+    paid[item.paidBy] =
+      (paid[item.paidBy] || 0) + item.price * (item.qty || 1) * scale
   }
 
   const net = people.map((person) => ({

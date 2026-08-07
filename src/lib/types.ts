@@ -9,4 +9,5 @@ export interface Item {
   price: number
   peopleIds: string[]
   paidBy?: string
+  qty?: number
 }
