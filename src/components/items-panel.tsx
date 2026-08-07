@@ -138,11 +138,19 @@ export function ItemsPanel({
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
                     className="h-8"
+                    onKeyDown={(e) => {
+                      if (e.key === "Escape") setEditingId(null)
+                      if (e.key === "Enter") saveEdit(item.id)
+                    }}
                   />
                   <Input
                     value={editPrice}
                     onChange={(e) => setEditPrice(e.target.value)}
                     className="h-8 w-20"
+                    onKeyDown={(e) => {
+                      if (e.key === "Escape") setEditingId(null)
+                      if (e.key === "Enter") saveEdit(item.id)
+                    }}
                   />
                   <Button size="sm" onClick={() => saveEdit(item.id)}>
                     save
