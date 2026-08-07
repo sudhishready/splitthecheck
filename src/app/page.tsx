@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from "react"
 import { Person, Item } from "@/lib/types"
-import { calculateTotals } from "@/lib/calculate"
+import { calculateTotals, calculateSettlements } from "@/lib/calculate"
 import { PeoplePanel } from "@/components/people-panel"
 import { ItemsPanel } from "@/components/items-panel"
 import { SummaryPanel } from "@/components/summary-panel"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text"
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler"
+import { SettleUpPanel } from "@/components/settle-up-panel"
+import { RotateCcw } from "lucide-react"
 
 const STORAGE_KEY = "splitthecheck-data"
 
@@ -35,7 +38,7 @@ export default function Home() {
     if (!loaded) return
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ people, items, taxPercent, tipPercent })
+      JSON.stringify({ people, items, taxPercent, tipPercent }),
     )
   }, [people, items, taxPercent, tipPercent, loaded])
 
@@ -49,7 +52,7 @@ export default function Home() {
       prev.map((item) => ({
         ...item,
         peopleIds: item.peopleIds.filter((pid) => pid !== id),
-      }))
+      })),
     )
   }
 
@@ -75,20 +78,51 @@ export default function Home() {
             ? item.peopleIds.filter((id) => id !== personId)
             : [...item.peopleIds, personId],
         }
-      })
+      }),
     )
+  }
+  function setItemPayer(itemId: string, personId: string) {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === itemId ? { ...item, paidBy: personId } : item,
+      ),
+    )
+  }
+  function resetAll() {
+    if (!confirm("wipe everything and start a new bill?")) return
+    setPeople([])
+    setItems([])
+    setTaxPercent(0)
+    setTipPercent(0)
   }
 
   const totals = calculateTotals(people, items, taxPercent, tipPercent)
+  const settlements = calculateSettlements(
+    people,
+    items,
+    taxPercent,
+    tipPercent,
+  )
 
   return (
     <main className="min-h-screen bg-background px-4 py-10">
       <div className="mx-auto max-w-3xl space-y-8">
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={resetAll}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </button>
+          <AnimatedThemeToggler />
+        </div>
         <div className="text-center space-y-3">
           <AnimatedGradientText className="text-4xl font-bold">
             splitthecheck
           </AnimatedGradientText>
-          <p className="text-muted-foreground">split the bill without doing the math in your head</p>
+          <p className="text-muted-foreground">
+            split the bill without doing the math in your head
+          </p>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -111,7 +145,11 @@ export default function Home() {
           </div>
         </div>
 
-        <PeoplePanel people={people} onAdd={addPerson} onRemove={removePerson} />
+        <PeoplePanel
+          people={people}
+          onAdd={addPerson}
+          onRemove={removePerson}
+        />
 
         <ItemsPanel
           items={items}
@@ -119,9 +157,12 @@ export default function Home() {
           onAdd={addItem}
           onRemove={removeItem}
           onToggle={toggleItemPerson}
+          onSetPayer={setItemPayer}
         />
 
         <SummaryPanel totals={totals} />
+
+        <SettleUpPanel settlements={settlements} />
       </div>
     </main>
   )
