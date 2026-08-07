@@ -62,11 +62,13 @@ export function ItemsPanel({
           placeholder="item name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleAdd()}
         />
         <Input
           placeholder="price"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleAdd()}
           className="w-24"
         />
         <Button onClick={handleAdd}>Add</Button>
