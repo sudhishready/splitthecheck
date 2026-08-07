@@ -170,6 +170,11 @@ export function ItemsPanel({
                 )
               })}
             </div>
+            {item.peopleIds.length === 0 && (
+              <p className="text-xs text-amber-600">
+                no one assigned to this yet
+              </p>
+            )}
             <div className="flex flex-wrap items-center gap-2 pt-1">
               <span className="text-xs text-muted-foreground">paid by</span>
               {people.map((person, i) => {
