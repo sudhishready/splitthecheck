@@ -6,6 +6,7 @@ export interface PersonTotal {
   subtotal: number
   tax: number
   tip: number
+  discount: number
   total: number
 }
 export function calculateTotals(
@@ -13,6 +14,7 @@ export function calculateTotals(
   items: Item[],
   taxPercent: number,
   tipPercent: number,
+  discountPercent: number,
 ): PersonTotal[] {
   const subtotals: Record<string, number> = {}
 
@@ -38,13 +40,15 @@ export function calculateTotals(
     const ratio = billSubtotal > 0 ? subtotal / billSubtotal : 0
     const tax = billSubtotal * (taxPercent / 100) * ratio
     const tip = billSubtotal * (tipPercent / 100) * ratio
+    const discount = billSubtotal * (discountPercent / 100) * ratio
     return {
       id: person.id,
       name: person.name,
       subtotal,
       tax,
       tip,
-      total: subtotal + tax + tip,
+      discount,
+      total: subtotal + tax + tip - discount,
     }
   })
 }
@@ -59,9 +63,16 @@ export function calculateSettlements(
   people: Person[],
   items: Item[],
   taxPercent: number,
+  discountPercent: number,
   tipPercent: number,
 ): Settlement[] {
-  const totals = calculateTotals(people, items, taxPercent, tipPercent)
+  const totals = calculateTotals(
+    people,
+    items,
+    taxPercent,
+    tipPercent,
+    discountPercent,
+  )
 
   const owed: Record<string, number> = {}
   for (const t of totals) {

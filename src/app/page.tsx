@@ -20,6 +20,7 @@ export default function Home() {
   const [items, setItems] = useState<Item[]>([])
   const [taxPercent, setTaxPercent] = useState(0)
   const [tipPercent, setTipPercent] = useState(0)
+  const [discountPercent, setDiscountPercent] = useState(0)
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function Home() {
       setItems(data.items || [])
       setTaxPercent(data.taxPercent || 0)
       setTipPercent(data.tipPercent || 0)
+      setDiscountPercent(data.discountPercent || 0)
     }
     setLoaded(true)
   }, [])
@@ -38,9 +40,15 @@ export default function Home() {
     if (!loaded) return
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ people, items, taxPercent, tipPercent }),
+      JSON.stringify({
+        people,
+        items,
+        taxPercent,
+        tipPercent,
+        discountPercent,
+      }),
     )
-  }, [people, items, taxPercent, tipPercent, loaded])
+  }, [people, items, taxPercent, tipPercent, discountPercent, loaded])
 
   function addPerson(name: string) {
     setPeople((prev) => [...prev, { id: crypto.randomUUID(), name }])
@@ -115,13 +123,21 @@ export default function Home() {
     setItems([])
     setTaxPercent(0)
     setTipPercent(0)
+    setDiscountPercent(0)
   }
 
-  const totals = calculateTotals(people, items, taxPercent, tipPercent)
+  const totals = calculateTotals(
+    people,
+    items,
+    taxPercent,
+    tipPercent,
+    discountPercent,
+  )
   const settlements = calculateSettlements(
     people,
     items,
     taxPercent,
+    discountPercent,
     tipPercent,
   )
 
@@ -145,7 +161,7 @@ export default function Home() {
             split the bill without doing the math in your head
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="tax">tax %</Label>
             <Input
@@ -178,6 +194,15 @@ export default function Home() {
                 </button>
               ))}
             </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="discount">discount %</Label>
+            <Input
+              id="discount"
+              type="number"
+              value={discountPercent}
+              onChange={(e) => setDiscountPercent(Number(e.target.value))}
+            />
           </div>
         </div>
 
