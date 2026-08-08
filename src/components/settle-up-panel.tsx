@@ -18,7 +18,7 @@ export function SettleUpPanel({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>settle up</CardTitle>
+        <CardTitle>Settle Up</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
         {settlements.map((s, i) => {

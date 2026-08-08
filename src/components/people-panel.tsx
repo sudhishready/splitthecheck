@@ -12,9 +12,15 @@ interface PeoplePanelProps {
   people: Person[]
   onAdd: (name: string) => void
   onRemove: (id: string) => void
+  totals: { id: string; total: number }[]
 }
 
-export function PeoplePanel({ people, onAdd, onRemove }: PeoplePanelProps) {
+export function PeoplePanel({
+  people,
+  onAdd,
+  onRemove,
+  totals,
+}: PeoplePanelProps) {
   const [name, setName] = useState("")
 
   function handleAdd() {
@@ -27,7 +33,7 @@ export function PeoplePanel({ people, onAdd, onRemove }: PeoplePanelProps) {
     <div className="space-y-3">
       <div className="flex gap-2">
         <Input
-          placeholder="add a person"
+          placeholder="Add a person"
           value={name}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleAdd()}
@@ -36,7 +42,7 @@ export function PeoplePanel({ people, onAdd, onRemove }: PeoplePanelProps) {
       </div>
       {people.length === 0 && (
         <p className="text-xs text-muted-foreground">
-          add people to split the bill with
+          Add people to split the bill with
         </p>
       )}
       <div className="flex flex-wrap gap-2">
@@ -48,6 +54,11 @@ export function PeoplePanel({ people, onAdd, onRemove }: PeoplePanelProps) {
           >
             <span className={`h-2 w-2 rounded-full ${personColor(i)}`} />
             {person.name}
+            {totals.find((t) => t.id === person.id) && (
+              <span className="ml-1 text-xs opacity-70">
+                ${totals.find((t) => t.id === person.id)!.total.toFixed(2)}
+              </span>
+            )}
             <button
               onClick={() => onRemove(person.id)}
               className="ml-1 hover:text-red-500"

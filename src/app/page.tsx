@@ -11,11 +11,21 @@ import { Label } from "@/components/ui/label"
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text"
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler"
 import { SettleUpPanel } from "@/components/settle-up-panel"
-import { RotateCcw } from "lucide-react"
-
+import {
+  RotateCcw,
+  HelpCircle,
+  Users,
+  Receipt,
+  ShoppingBag,
+  PieChart,
+  HandCoins,
+} from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { GuideModal } from "@/components/guide-modal"
 const STORAGE_KEY = "splitthecheck-data"
 
 export default function Home() {
+  const [guideOpen, setGuideOpen] = useState(false)
   const [people, setPeople] = useState<Person[]>([])
   const [items, setItems] = useState<Item[]>([])
   const [taxPercent, setTaxPercent] = useState(0)
@@ -38,6 +48,13 @@ export default function Home() {
       setPaidSettlements(data.paidSettlements || [])
     }
     setLoaded(true)
+  }, [])
+  useEffect(() => {
+    const seen = localStorage.getItem("splitthecheck-guide-seen")
+    if (!seen) {
+      setGuideOpen(true)
+      localStorage.setItem("splitthecheck-guide-seen", "1")
+    }
   }, [])
 
   useEffect(() => {
@@ -165,6 +182,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-background px-4 py-10">
+      <GuideModal open={guideOpen} onOpenChange={setGuideOpen} />
       <div className="mx-auto max-w-3xl space-y-8">
         <div className="flex justify-end gap-2">
           <button
@@ -173,87 +191,120 @@ export default function Home() {
           >
             <RotateCcw className="h-4 w-4" />
           </button>
+          <button
+            onClick={() => setGuideOpen(true)}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <HelpCircle className="h-4 w-4" />
+          </button>
           <AnimatedThemeToggler />
         </div>
         <div className="text-center space-y-3">
           <AnimatedGradientText className="text-4xl font-bold">
-            splitthecheck
+            Splitthecheck
           </AnimatedGradientText>
           <p className="text-muted-foreground">
-            split the bill without doing the math in your head
+            Split the bill without doing the math in your head
           </p>
           <Input
             value={billName}
             onChange={(e) => setBillName(e.target.value)}
-            placeholder="name this bill (optional)"
+            placeholder="Name this bill (optional)"
             className="max-w-xs mx-auto text-center"
           />
         </div>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="tax">tax %</Label>
-            <Input
-              id="tax"
-              type="number"
-              value={taxPercent}
-              onChange={(e) => setTaxPercent(Number(e.target.value))}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="tip">tip %</Label>
-            <Input
-              id="tip"
-              type="number"
-              value={tipPercent}
-              onChange={(e) => setTipPercent(Number(e.target.value))}
-            />
-            <div className="flex gap-1 pt-1">
-              {[0, 10, 15, 18, 20].map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setTipPercent(p)}
-                  className={`text-xs rounded-full px-2 py-0.5 border ${
-                    tipPercent === p
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "border-muted-foreground/30 text-muted-foreground"
-                  }`}
-                >
-                  {p}%
-                </button>
-              ))}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Receipt className="h-4 w-4" />
+              Bill Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="tax">Tax %</Label>
+                <Input
+                  id="tax"
+                  type="number"
+                  value={taxPercent}
+                  onChange={(e) => setTaxPercent(Number(e.target.value))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="tip">Tip %</Label>
+                <Input
+                  id="tip"
+                  type="number"
+                  value={tipPercent}
+                  onChange={(e) => setTipPercent(Number(e.target.value))}
+                />
+                <div className="flex gap-1 pt-1">
+                  {[0, 10, 15, 18, 20].map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setTipPercent(p)}
+                      className={`text-xs rounded-full px-2 py-0.5 border ${
+                        tipPercent === p
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "border-muted-foreground/30 text-muted-foreground"
+                      }`}
+                    >
+                      {p}%
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="discount">Discount %</Label>
+                <Input
+                  id="discount"
+                  type="number"
+                  value={discountPercent}
+                  onChange={(e) => setDiscountPercent(Number(e.target.value))}
+                />
+              </div>
             </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="discount">discount %</Label>
-            <Input
-              id="discount"
-              type="number"
-              value={discountPercent}
-              onChange={(e) => setDiscountPercent(Number(e.target.value))}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Users className="h-4 w-4" />
+              Who's Splitting
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <PeoplePanel
+              people={people}
+              onAdd={addPerson}
+              onRemove={removePerson}
+              totals={totals}
             />
-          </div>
-        </div>
-
-        <PeoplePanel
-          people={people}
-          onAdd={addPerson}
-          onRemove={removePerson}
-        />
-
-        <ItemsPanel
-          items={items}
-          people={people}
-          onAdd={addItem}
-          onRemove={removeItem}
-          onToggle={toggleItemPerson}
-          onSetPayer={setItemPayer}
-          onSetQty={setItemQty}
-          onEdit={editItem}
-          onSelectAll={setItemAllPeople}
-        />
-
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <ShoppingBag className="h-4 w-4" />
+              The Items
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ItemsPanel
+              items={items}
+              people={people}
+              onAdd={addItem}
+              onRemove={removeItem}
+              onToggle={toggleItemPerson}
+              onSetPayer={setItemPayer}
+              onSetQty={setItemQty}
+              onEdit={editItem}
+              onSelectAll={setItemAllPeople}
+            />
+          </CardContent>
+        </Card>
         <SummaryPanel totals={totals} billName={billName} />
-
         <SettleUpPanel
           settlements={settlements}
           paidKeys={paidSettlements}

@@ -18,7 +18,7 @@ export function SummaryPanel({ totals, billName }: SummaryPanelProps) {
   function copySummary() {
     const lines = totals.map((t) => `${t.name}: $${t.total.toFixed(2)}`)
     if (billName) lines.unshift(billName)
-    lines.push(`total: $${grandTotal.toFixed(2)}`)
+    lines.push(`Total: $${grandTotal.toFixed(2)}`)
     navigator.clipboard.writeText(lines.join("\n"))
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
@@ -27,7 +27,7 @@ export function SummaryPanel({ totals, billName }: SummaryPanelProps) {
   return (
     <Card>
       <CardHeader className="flex items-center justify-between">
-        <CardTitle>who owes what</CardTitle>
+        <CardTitle>Who Owes What</CardTitle>
         {totals.length > 0 && (
           <button
             onClick={copySummary}
@@ -44,7 +44,7 @@ export function SummaryPanel({ totals, billName }: SummaryPanelProps) {
       <CardContent className="space-y-3">
         {totals.length === 0 && (
           <p className="text-sm text-muted-foreground">
-            add people and items to see the split
+            Add people and items to see the split
           </p>
         )}
         {totals.map((t) => (
@@ -54,8 +54,8 @@ export function SummaryPanel({ totals, billName }: SummaryPanelProps) {
               <span className="font-semibold">${t.total.toFixed(2)}</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              sub {t.subtotal.toFixed(2)} + tax {t.tax.toFixed(2)} + tip{" "}
-              {t.tip.toFixed(2)} - disc {t.discount.toFixed(2)}
+              Sub {t.subtotal.toFixed(2)} + Tax {t.tax.toFixed(2)} + Tip{" "}
+              {t.tip.toFixed(2)} - Disc {t.discount.toFixed(2)}
             </p>
           </div>
         ))}
@@ -63,7 +63,7 @@ export function SummaryPanel({ totals, billName }: SummaryPanelProps) {
           <>
             <Separator />
             <div className="flex items-center justify-between font-semibold">
-              <span>total</span>
+              <span>Total</span>
               <span>
                 $<NumberTicker value={grandTotal} decimalPlaces={2} />
               </span>

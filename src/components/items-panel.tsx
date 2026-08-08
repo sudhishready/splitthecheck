@@ -60,13 +60,13 @@ export function ItemsPanel({
     <div className="space-y-4">
       <div className="flex gap-2">
         <Input
-          placeholder="item name"
+          placeholder="Item name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleAdd()}
         />
         <Input
-          placeholder="price"
+          placeholder="Price"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleAdd()}
@@ -76,14 +76,14 @@ export function ItemsPanel({
       </div>
       {items.length > 3 && (
         <Input
-          placeholder="search items"
+          placeholder="Search items"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       )}
       {items.length === 0 && (
         <p className="text-xs text-muted-foreground">
-          add items from the bill to split them up
+          Add items from the bill to split them up
         </p>
       )}
 
@@ -195,11 +195,11 @@ export function ItemsPanel({
               </div>
               {item.peopleIds.length === 0 && (
                 <p className="text-xs text-amber-600">
-                  no one assigned to this yet
+                  No one assigned to this yet
                 </p>
               )}
               <div className="flex flex-wrap items-center gap-2 pt-1">
-                <span className="text-xs text-muted-foreground">paid by</span>
+                <span className="text-xs text-muted-foreground">Paid by</span>
                 {people.map((person, i) => {
                   const isPayer = item.paidBy === person.id
                   return (
@@ -219,7 +219,7 @@ export function ItemsPanel({
               </div>
               {!item.paidBy && (
                 <p className="text-xs text-amber-600">
-                  no one marked as paying yet
+                  No one marked as paying yet
                 </p>
               )}
             </div>
